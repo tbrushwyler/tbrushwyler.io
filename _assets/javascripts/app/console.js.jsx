@@ -24,6 +24,9 @@ var Console = React.createClass({
 		};
 	},
 	getContext: function(path, baseContext) {
+		return this.getObject(path, baseContext);
+	},
+	getObject: function(path, baseContext) {
 		var context = baseContext || this.state.structure;
 		var directories = path.trim().split("/");
 		for (var i = 0; i < directories.length; i++) {
@@ -31,69 +34,51 @@ var Console = React.createClass({
 			if (dir === "")
 				continue;
 
-			context = context[dir];
+			if (!context.isDirectory)
+				return false;
 
-			if (!context)
-				return context;
+			if (dir === "..") {
+				var index = context.path.lastIndexOf("/");
+				if (index < 0)
+					return false;
+
+				// go up a level and continue
+				context = this.getObject(context.path.substring(0, index));
+				continue;
+			}
+
+			var containsObject = context.contents.some(function(el, i) {
+				return el.name === dir ? ((context = el), true) : false;
+			});
+
+			if (!context || !containsObject)
+				return false;
 		}
 
 		return context;
 	},
-	isPathValid: function(path) {
-		var directory = this.state.currentDirectory;
-		var context = this.getContext(directory);
+	newLine: function(path) {
+		if (path !== "" && !path)
+			path = this.state.currentDirectory;
 
-		var gotos = path.trim().split("/");
-		for (var i = 0; i < gotos.length; i++) {
-			var gotoFolder = gotos[i];
-			if (gotoFolder === "..") {
-				if (directory.indexOf("/") < 0) {
-					return false;
-				} else {
-					directory = directory.substring(0, directory.lastIndexOf("/"));
-					context = this.getContext(directory);
-				}
-			} else {
-				context = this.getContext(gotoFolder, context);
-				if (!context)
-					return false;
-
-				directory += "/" + gotoFolder;
-			}
-		}
-
-		return true;
-	},
-	onDefault: function() {
 		var lines = this.state.lines;
 		lines.push({
-			directory: this.state.currentDirectory
+			directory: path
 		});
 
 		this.setState({
 			lines: lines
 		});
 	},
-	onChangeDirectory: function(directory) {
+	onChangeDirectory: function(context) {
 		this.setState({
-			currentDirectory: directory
+			currentDirectory: context.path
 		});
-
-		var lines = this.state.lines;
-		lines.push({
-			directory: directory
-		});
-
-		this.setState({
-			lines: lines
-		});
-
-		return true;
 	},
 	render: function() {
 		var consoleLines = this.state.lines.map(function(consoleLine) {
 			return (
-				<ConsoleLine directory={consoleLine.directory} onDefault={ this.onDefault } context={ this.getContext(consoleLine.directory) } onChangeDirectory={ this.onChangeDirectory } isPathValid={ this.isPathValid }></ConsoleLine>
+				<ConsoleLine newLine={ this.newLine } context={ this.getContext(consoleLine.directory) } onChangeDirectory={ this.onChangeDirectory } getObject={ this.getObject }></ConsoleLine>
 			);
 		}, this);
 
@@ -114,72 +99,55 @@ var ConsoleLine = React.createClass({
 		var command = split[0];
 		var arguments = split.slice(1, split.length);
 
-		var directory = this.props.directory;
 		switch (command) {
 			case "cd":
+				var newDir = this.props.context.path;
 				if (arguments.length === 0) {
-					directory = "";
+					newDir = "";
 				} else {
 					var path = arguments[0].trim();
-					if (!this.props.isPathValid(arguments[0].trim())) {
+					var obj = this.props.getObject(path, this.props.context);
+					if (!obj) {
 						this.setState({
 							error: true,
-							response: ( <p> {"cd: " + path + ": No such file or directory"} </p>)
+							response: ( <p> cd: {path }: No such file or directory</p> )
 						});
+					} else if (!obj.isDirectory) {
+						this.setState({
+							error: true,
+							response: ( <p> cd: { path }: Not a directory</p> )
+						})
 					} else {
-						var gotos = path.split("/");
-						for (var i = 0; i < gotos.length; i++) {
-							var gotoFolder = gotos[i];
-							if (gotoFolder === "..") {
-								if (directory.indexOf("/") >= 0) {
-									directory = directory.substring(0, directory.lastIndexOf("/"));
-								}
-							} else {
-								directory += "/" + gotoFolder;
-							}
-						}
+						this.props.onChangeDirectory(obj);
+						newDir = obj.path;
 					}
 				}
-				
-				this.props.onChangeDirectory(directory);
+
+				this.props.newLine(newDir);
 
 				break;
 			case "ls":
-				var response = [];
-
-				if (this.props.context._subdirectories) {
-					var subdirectories = this.props.context._subdirectories.map(function(subdir) {
-						return ( <p> { subdir } </p> );
-					});
-
-					response = response.concat(subdirectories);
-				}
-
-				if (this.props.context._files) {
-					var files = this.props.context._files.map(function(file) {
-						return ( <p> { file } </p>);
-					});
-
-					response = response.concat(files);
-				}
+				var response = this.props.context.contents.map(function(obj) {
+					return (<p> { obj.name }</p>);
+				});
 
 				this.setState({
 					response: response
 				});
 
-				this.props.onDefault();
+				this.props.newLine();
 				break;
 			case "cat":
 				var error = false;
 
 				var response = arguments.map(function(arg) {
-					var file = this.props.context[arg.trim()];
-					if (file) {
-						if (file.directory) {
+					var obj = this.props.getObject(arg.trim(), this.props.context);
+					if (obj) {
+						if (obj.isDirectory) {
 							error = true;
 							return ( <p>cat: {arg}: Is a directory</p>);
 						} else {
-							return ( <pre>{ file.contents }</pre> );
+							return ( <pre>{ obj.contents }</pre> );
 						}
 					} else {
 						error = true;
@@ -192,11 +160,12 @@ var ConsoleLine = React.createClass({
 					error: error
 				});
 
-				this.props.onDefault();
+				this.props.newLine();
 				break;
 			default:
-				if (this.props.context[command] && this.props.context[command].executable) {
-					eval(this.props.context[command].contents);
+				var obj = this.props.getObject(command, this.props.context);
+				if (obj && obj.isExecutable) {
+					eval(obj.contents);
 				} else {
 					this.setState({
 						error: true,
@@ -204,7 +173,7 @@ var ConsoleLine = React.createClass({
 					})
 				}
 
-				this.props.onDefault();
+				this.props.newLine();
 		}
 	},
 	render: function() {
@@ -215,7 +184,7 @@ var ConsoleLine = React.createClass({
 		return (
 			<div>
 				<p className="console-line">
-				  <ConsolePrompt directory={ this.props.directory } />
+				  <ConsolePrompt directory={ this.props.context.path } />
 				  &nbsp;
 				  <ConsoleCommand onEnter={ this.onEnter } />
 				</p>

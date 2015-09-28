@@ -1,34 +1,40 @@
 {
-	"_subdirectories": [
-		"experiments",
-		"projects"
-	],
-	"_files": [
-		"about.md",
-		"contact.app"
-	],
-	"projects": {
-		"directory": true,
-		"_subdirectories": [
-			"tbrushwyler"
-		],
-		"tbrushwyler": {
-			"directory": true,
-			"_subdirectories": []
+	"name": "",
+	"path": "",
+	"isDirectory": true,
+	"contents": [
+		{
+			"name": "experiments",
+			"path": "/experiments",
+			"isDirectory": true,
+			"contents": []
+		},
+		{
+			"name": "projects",
+			"path": "/projects",
+			"isDirectory": true,
+			"contents": [
+				{
+					"path": "/projects/tbrushwyler",
+					"name": "tbrushwyler",
+					"isDirectory": true,
+					"contents": []
+				}
+			]
+		},
+		{
+			"name": "about.md",
+			"path": "/about.md",
+			"isDirectory": false,
+			"isExecutable": false,
+			"contents": "Hello, my name is Taylor Brushwyler and I like to learn new things.\n\nThis site was built as a playground to help me learn ReactJS.\nPlease feel free to play around."
+		},
+		{
+			"name": "contact.app",
+			"path": "/contact.app",
+			"isDirectory": false,
+			"isExecutable": true,
+			"contents": "window.location.href = \"mailto:trb1992@gmail.com\""
 		}
-	},
-	"experiments": {
-		"directory": true,
-		"_subdirectories": []
-	},
-	"about.md": {
-		"directory": false,
-		"executable": false,
-		"contents": "Hello, my name is Taylor Brushwyler and I like to learn new things.\n\nThis site was built as a playground to help me learn ReactJS.\nPlease feel free to play around."
-	},
-	"contact.app": {
-		"directory": false,
-		"executable": true,
-		"contents": "window.location.href = \"mailto:trb1992@gmail.com\""
-	}
+	]
 }
