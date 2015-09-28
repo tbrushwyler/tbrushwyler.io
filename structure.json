@@ -7,7 +7,22 @@
 			"name": "experiments",
 			"path": "/experiments",
 			"isDirectory": true,
-			"contents": []
+			"contents": [
+				{
+					"name": "view_source.app",
+					"path": "/experiments/view_source.app",
+					"isDirectory": false,
+					"isExecutable": true,
+					"url": "experiments/view_source.js"
+				},
+				{
+					"name": "alert.app",
+					"path": "/experiments/alert.app",
+					"isDirectory": false,
+					"isExecutable": true,
+					"url": "experiments/alert.js"
+				}
+			]
 		},
 		{
 			"name": "projects",

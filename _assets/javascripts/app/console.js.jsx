@@ -15,7 +15,7 @@ var Console = React.createClass({
 			error: function(xhr, status, err) {
 				console.error(this.props.structureUrl, status, err.toString());
 			}.bind(this)
-		})
+		});
 	},
 	getInitialState: function() {
 		return { 
@@ -97,15 +97,15 @@ var ConsoleLine = React.createClass({
 	onEnter: function(userInput) {
 		var split = userInput.trim().split(" ");
 		var command = split[0];
-		var arguments = split.slice(1, split.length);
+		var args = split.slice(1, split.length);
 
 		switch (command) {
 			case "cd":
 				var newDir = this.props.context.path;
-				if (arguments.length === 0) {
+				if (args.length === 0) {
 					newDir = "";
 				} else {
-					var path = arguments[0].trim();
+					var path = args[0].trim();
 					var obj = this.props.getObject(path, this.props.context);
 					if (!obj) {
 						this.setState({
@@ -163,17 +163,49 @@ var ConsoleLine = React.createClass({
 				this.props.newLine();
 				break;
 			default:
-				var obj = this.props.getObject(command, this.props.context);
+				var app = command;
+				if (app.indexOf(".app") < 0)
+					app += ".app";
+
+				var obj = this.props.getObject(app, this.props.context);
 				if (obj && obj.isExecutable) {
-					eval(obj.contents);
+					if (obj.contents) {
+						eval(obj.contents);
+						this.props.newLine();
+					} else {
+						$.ajax({
+							url: obj.url,
+							success: function(data) {
+								var errorMessage = eval("execute(args)");
+								if (errorMessage) {
+									this.setState({
+										error: true,
+										response: ( <p>{ command }: { errorMessage }</p> )
+									});
+								}
+
+								this.props.newLine();
+							}.bind(this),
+							error: function(xhr, status, err) {
+								console.error(obj.url, status, err.toString());
+
+								this.setState({
+									error: true,
+									response: ( <p>{ command }: { err.toString() }</p> )
+								});
+
+								this.props.newLine();
+							}.bind(this)
+						});
+					}
 				} else {
 					this.setState({
 						error: true,
 						response: ( <p>{ command }: command not found</p> )
-					})
-				}
+					});
 
-				this.props.newLine();
+					this.props.newLine();
+				}
 		}
 	},
 	render: function() {
