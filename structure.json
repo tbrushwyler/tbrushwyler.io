@@ -1,0 +1,34 @@
+{
+	"_subdirectories": [
+		"experiments",
+		"projects"
+	],
+	"_files": [
+		"about.md",
+		"contact.app"
+	],
+	"projects": {
+		"directory": true,
+		"_subdirectories": [
+			"tbrushwyler"
+		],
+		"tbrushwyler": {
+			"directory": true,
+			"_subdirectories": []
+		}
+	},
+	"experiments": {
+		"directory": true,
+		"_subdirectories": []
+	},
+	"about.md": {
+		"directory": false,
+		"executable": false,
+		"contents": "Hello, my name is Taylor Brushwyler and I like to learn new things.\n\nThis site was built as a playground to help me learn ReactJS.\nPlease feel free to play around."
+	},
+	"contact.app": {
+		"directory": false,
+		"executable": true,
+		"contents": "window.location.href = \"mailto:trb1992@gmail.com\""
+	}
+}

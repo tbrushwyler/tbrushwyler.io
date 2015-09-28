@@ -1,36 +1,30 @@
-var structure = {
-	"_subdirectories": [
-		"projects",
-		"experiments"
-	],
-	"_files": [
-		"about.md"
-	],
-	"projects": {
-		"_subdirectories": [
-			"tbrushwyler"
-		],
-		"tbrushwyler": {
-			"_subdirectories": []
-		}
-	},
-	"experiments": {
-		"_subdirectories": []
-	},
-	"about.md": {
-		"contents": "hello, this is an experiment built in React"
-	}
-};
-
 var Console = React.createClass({
+	loadStructureFromServer: function() {
+		$.ajax({
+			url: this.props.structureUrl,
+			dataType: 'json',
+			success: function(data) {
+				var lines = this.state.lines;
+				lines.push({directory: ''});
+
+				this.setState({
+					lines: lines,
+					structure: data
+				});
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error(this.props.structureUrl, status, err.toString());
+			}.bind(this)
+		})
+	},
 	getInitialState: function() {
 		return { 
-			data: [{ directory: '' }],
+			lines: [],
 			currentDirectory: ''
 		};
 	},
 	getContext: function(path, baseContext) {
-		var context = baseContext || this.props.structure;
+		var context = baseContext || this.state.structure;
 		var directories = path.trim().split("/");
 		for (var i = 0; i < directories.length; i++) {
 			var dir = directories[i];
@@ -71,13 +65,13 @@ var Console = React.createClass({
 		return true;
 	},
 	onDefault: function() {
-		var data = this.state.data;
-		data.push({
+		var lines = this.state.lines;
+		lines.push({
 			directory: this.state.currentDirectory
 		});
 
 		this.setState({
-			data: data
+			lines: lines
 		});
 	},
 	onChangeDirectory: function(directory) {
@@ -85,19 +79,19 @@ var Console = React.createClass({
 			currentDirectory: directory
 		});
 
-		var data = this.state.data;
-		data.push({
+		var lines = this.state.lines;
+		lines.push({
 			directory: directory
 		});
 
 		this.setState({
-			data: data
+			lines: lines
 		});
 
 		return true;
 	},
 	render: function() {
-		var consoleLines = this.state.data.map(function(consoleLine) {
+		var consoleLines = this.state.lines.map(function(consoleLine) {
 			return (
 				<ConsoleLine directory={consoleLine.directory} onDefault={ this.onDefault } context={ this.getContext(consoleLine.directory) } onChangeDirectory={ this.onChangeDirectory } isPathValid={ this.isPathValid }></ConsoleLine>
 			);
@@ -108,6 +102,9 @@ var Console = React.createClass({
 				{ consoleLines }
 			</div>
 		);
+	},
+	componentDidMount: function() {
+		this.loadStructureFromServer();
 	}
 });
 
@@ -148,15 +145,24 @@ var ConsoleLine = React.createClass({
 
 				break;
 			case "ls":
-				var subdirectories = this.props.context._subdirectories.map(function(subdir) {
-					return ( <p> { subdir } </p> );
-				});
+				var response = [];
 
-				var files = this.props.context._files.map(function(file) {
-					return ( <p> { file } </p>);
-				});
+				if (this.props.context._subdirectories) {
+					var subdirectories = this.props.context._subdirectories.map(function(subdir) {
+						return ( <p> { subdir } </p> );
+					});
 
-				var response = subdirectories.concat(files);
+					response = response.concat(subdirectories);
+				}
+
+				if (this.props.context._files) {
+					var files = this.props.context._files.map(function(file) {
+						return ( <p> { file } </p>);
+					});
+
+					response = response.concat(files);
+				}
+
 				this.setState({
 					response: response
 				});
@@ -164,20 +170,40 @@ var ConsoleLine = React.createClass({
 				this.props.onDefault();
 				break;
 			case "cat":
-				var file = this.props.context[arguments[0].trim()];
-				var response = ( <p>{ file.contents }</p> );
+				var error = false;
+
+				var response = arguments.map(function(arg) {
+					var file = this.props.context[arg.trim()];
+					if (file) {
+						if (file.directory) {
+							error = true;
+							return ( <p>cat: {arg}: Is a directory</p>);
+						} else {
+							return ( <pre>{ file.contents }</pre> );
+						}
+					} else {
+						error = true;
+						return ( <p>cat: { arg }: No such file or directory</p> );
+					}
+				}.bind(this));
 
 				this.setState({
-					response: response
+					response: response,
+					error: error
 				});
 
 				this.props.onDefault();
 				break;
 			default:
-				this.setState({
-					error: true,
-					response: ( <p>{ command }: command not found</p> )
-				})
+				if (this.props.context[command] && this.props.context[command].executable) {
+					eval(this.props.context[command].contents);
+				} else {
+					this.setState({
+						error: true,
+						response: ( <p>{ command }: command not found</p> )
+					})
+				}
+
 				this.props.onDefault();
 		}
 	},
@@ -292,6 +318,6 @@ var ConsoleCharacter = React.createClass({
 });
 
 React.render(
-	<Console structure={ structure }/>,
+	<Console structureUrl={ "structure.json" }/>,
 	document.getElementById('console')
 );
