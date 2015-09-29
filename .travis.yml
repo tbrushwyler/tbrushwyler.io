@@ -14,6 +14,8 @@ script:
 - rake clean
 - set -e
 - rake build
+- ls
+- ls _site
 - git checkout -b gh-pages
 - echo "tbrushwyler.io" > _site/CNAME
 - git add -f _site/
