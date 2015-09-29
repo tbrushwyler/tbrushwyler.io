@@ -140,18 +140,35 @@ var ConsoleLine = React.createClass({
 			case "cat":
 				var error = false;
 
-				var response = arguments.map(function(arg) {
+				var response = args.map(function(arg) {
 					var obj = this.props.getObject(arg.trim(), this.props.context);
 					if (obj) {
 						if (obj.isDirectory) {
 							error = true;
 							return ( <p>cat: {arg}: Is a directory</p>);
 						} else {
-							return ( <pre>{ obj.contents }</pre> );
+							if (obj.contents) {
+								return ( <pre>{ obj.contents }</pre> );
+							} else {
+								var response = $.ajax({
+									url: obj.url,
+									async: false,
+									success: function(data, status, xhr) {
+										return ( <pre>{ xhr.responseText }</pre> );
+									}.bind(this),
+									error: function(xhr, status, err) {
+										console.error(obj.url, status, err.toString());
+
+										return ( <p>{ command }: { err.toString() }</p> );
+									}.bind(this)
+								});
+
+								return (<pre>{ response.responseText }</pre>);
+							}
 						}
 					} else {
 						error = true;
-						return ( <p>cat: { arg }: No such file or directory</p> );
+						return ( <p>{ command }: { arg }: No such file or directory</p> );
 					}
 				}.bind(this));
 
