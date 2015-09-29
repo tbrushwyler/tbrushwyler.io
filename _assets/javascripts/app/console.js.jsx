@@ -108,6 +108,19 @@ var ConsoleLine = React.createClass({
 		var args = split.slice(1, split.length);
 
 		switch (command) {
+			case "help":
+				this.setState({
+					response: ( <div>
+									<p> help: available commands: cd, ls, cat </p>
+									<p>Some things to try:</p>
+									<p>&nbsp;&nbsp;- cat about.md</p>
+									<p>&nbsp;&nbsp;- experiments/toggle_lights</p>
+								</div> )
+				})
+
+				this.props.newLine();
+
+				break;
 			case "cd":
 				var newDir = this.props.context.path;
 				if (args.length === 0) {
