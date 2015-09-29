@@ -2,7 +2,6 @@ language: ruby
 rvm:
 - 2.1
 
-install: bundle install
 before_script:
 - openssl aes-256-cbc -K $encrypted_237b19870f31_key -iv $encrypted_237b19870f31_iv -in .travisdeploykey.enc -out .travisdeploykey -d
 - chmod go-rwx .travisdeploykey
