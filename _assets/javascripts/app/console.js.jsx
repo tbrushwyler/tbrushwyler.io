@@ -148,9 +148,36 @@ var ConsoleLine = React.createClass({
 
 				break;
 			case "ls":
-				var response = this.props.context.contents.map(function(obj) {
-					return (<p> { obj.name }</p>);
-				});
+				var response = [];
+				if (args && args.length) {
+					for (var i = 0; i < args.length; i++) {
+						var path = args[i].trim();
+						if (path.indexOf('-') || path.indexOf('-') > 1) {
+							if (i > 0) {
+								response.push((<p>&nbsp;</p>));
+							}
+
+							var obj = this.props.getObject(path, this.props.context);
+							if (!obj) {
+								response.push(( <p> { command }: { path }: No such file or directory </p> ));
+							} else if (obj.isDirectory) {
+								if (args.length > 1) {
+									response.push((<p>{obj.name}:</p>));
+								}
+
+								response = response.concat(obj.contents.map(function(sub) {
+									return (<p> { sub.name } </p>);
+								}));
+							} else {
+								response.push((<p> { obj.name } </p>));
+							}
+						}
+					}
+				} else {
+					response = response.concat(this.props.context.contents.map(function(sub) {
+						return (<p> { sub.name } </p>);
+					}));
+				}
 
 				this.setState({
 					response: response
