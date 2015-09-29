@@ -20,7 +20,7 @@ script:
 - git add -f _site/
 - 'git commit -m "${COMMIT_MESSAGE}"'
 - git filter-branch -f --subdirectory-filter _site/
-- git push -f git@github.com:tbrushwyler/tbruswhyler.io.git gh-pages:gh-pages
+- git push -f git@github.com:tbrushwyler/tbrushwyler.io.git gh-pages:gh-pages
 
 branches:
   only:
