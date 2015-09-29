@@ -95,6 +95,14 @@ var Console = React.createClass({
 
 var ConsoleLine = React.createClass({
 	onEnter: function(userInput) {
+		var commands = [];
+		if (Cookies.get('commands')) {
+			commands = JSON.parse(Cookies.get('commands'));
+		}
+		commands.push(userInput);
+
+		Cookies.set('commands', commands);
+
 		var split = userInput.trim().split(" ");
 		var command = split[0];
 		var args = split.slice(1, split.length);
@@ -262,6 +270,30 @@ var ConsoleCommand = React.createClass({
 	handleChange: function(e) {
 		var cursorIndex = e.target.selectionStart;
 		var userInput = e.target.value;
+
+		if (e.keyCode === 38 || e.keyCode == 40) {
+			// up or down arrow, respectively
+			var commands = [];
+			if (Cookies.get('commands')) {
+				commands = JSON.parse(Cookies.get('commands'));
+			}
+
+			var index = this.state.index;
+			if (typeof index === 'undefined')
+				index = commands.length;
+			index += (e.keyCode - 39);
+
+			if (index < 0)
+				index = 0;
+			if (index >= commands.length)
+				index = commands.length;
+
+			this.setState({ index: index });
+			if (index < commands.length)
+				userInput = commands[index];
+			else
+				userInput = '';
+		}
 
 		var enterPushed = e.keyCode === 13;
 
