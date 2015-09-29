@@ -11,7 +11,7 @@ before_script:
 - git config user.email "noreply@travis-ci.org"
 - COMMIT_MESSAGE="Publishing site on `date "+%Y-%m-%d %H:%M:%S"` from `git log -n 1 --format='commit %h - %s'`"
 script: 
-- rake rebuild
+- rake clean
 - set -e
 - rake build
 - git checkout -b gh-pages
