@@ -130,7 +130,6 @@ pre {
     font-size: $base-font-size;
     line-height: $base-line-height;
     font-weight: 300;
-    color: $text-color;
 }
 
 
@@ -195,13 +194,11 @@ pre {
     font-size: $base-font-size;
     outline: none;
     vertical-align: bottom;
-    background-color: $background-color;
     position: relative;
 
     .console-command-text {
         outline: none;
         vertical-align: bottom;
-        background-color: $background-color;
     }
 
     .console-command-input {
@@ -215,20 +212,20 @@ pre {
         box-sizing: border-box;
 
         &.active {
-            background-color: #d8d8d8;
-            animation: blink-bg 1s steps(5, start) infinite;
-            -webkit-animation: blink-bg 1s steps(5, start) infinite;
+            background-color: #b8b8b8;
+            animation: blink-bg 1s steps(2, start) infinite;
+            -webkit-animation: blink-bg 1s steps(2, start) infinite;
         }
     }
 
     .console-cursor {
-        background-color: #d8d8d8;
+        background-color: #b8b8b8;
         width: 0.5em;
         height: 1em;
         vertical-align: text-bottom;
         display: inline-block;
-        animation: blink 1s steps(5, start) infinite;
-        -webkit-animation: blink 1s steps(5, start) infinite;
+        animation: blink 1s steps(2, start) infinite;
+        -webkit-animation: blink 1s steps(2, start) infinite;
     }
 }
 
@@ -245,11 +242,11 @@ pre {
 
 @keyframes blink-bg {
     to {
-        background-color: $background-color;
+        background-color: transparent;
     }
 }
 @-webkit-keyframes blink {
     to {
-        background-color: $background-color;
+        background-color: transparent;
     }
 }

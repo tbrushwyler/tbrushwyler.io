@@ -9,18 +9,25 @@
 			"isDirectory": true,
 			"contents": [
 				{
-					"name": "view_source.app",
-					"path": "/experiments/view_source.app",
-					"isDirectory": false,
-					"isExecutable": true,
-					"url": "experiments/view_source.js"
-				},
-				{
 					"name": "alert.app",
 					"path": "/experiments/alert.app",
 					"isDirectory": false,
 					"isExecutable": true,
 					"url": "experiments/alert.js"
+				},
+				{
+					"name": "toggle_lights.app",
+					"path": "/experiments/toggle_lights.app",
+					"isDirectory": false,
+					"isExecutable": true,
+					"url": "experiments/toggle_lights.js"
+				},
+				{
+					"name": "view_source.app",
+					"path": "/experiments/view_source.app",
+					"isDirectory": false,
+					"isExecutable": true,
+					"url": "experiments/view_source.js"
 				}
 			]
 		},

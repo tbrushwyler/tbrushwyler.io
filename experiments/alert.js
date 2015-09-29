@@ -1,4 +1,4 @@
-var execute = function(args, errorMessage) {
+var execute = function(args) {
 	if (!args || !args.length) {
 		return "Usage: \"alert {message}\"";
 	}
