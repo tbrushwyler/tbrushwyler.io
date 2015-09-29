@@ -11,11 +11,8 @@ before_script:
 - git config user.email "noreply@travis-ci.org"
 - COMMIT_MESSAGE="Publishing site on `date "+%Y-%m-%d %H:%M:%S"` from `git log -n 1 --format='commit %h - %s'`"
 script: 
-- rake clean
 - set -e
-- rake build
-- ls
-- ls _site
+- rake rebuild
 - git checkout -b gh-pages
 - echo "tbrushwyler.io" > _site/CNAME
 - git add -f _site/
