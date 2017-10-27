@@ -70,6 +70,9 @@ var Console = React.createClass({
 			lines: lines
 		});
 	},
+	clear: function(path) {
+		lines = [];
+	},
 	onChangeDirectory: function(context) {
 		this.setState({
 			currentDirectory: context.path
@@ -226,6 +229,9 @@ var ConsoleLine = React.createClass({
 				});
 
 				this.props.newLine();
+				break;
+			case "clear":
+				this.props.clear();
 				break;
 			default:
 				var app = command;
