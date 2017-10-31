@@ -71,7 +71,9 @@ var Console = React.createClass({
 		});
 	},
 	clear: function() {
-		this.state.lines = [];
+		this.setState({
+			lines: []
+		});
 	},
 	onChangeDirectory: function(context) {
 		this.setState({
