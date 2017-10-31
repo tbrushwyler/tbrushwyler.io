@@ -83,7 +83,7 @@ var Console = React.createClass({
 	render: function() {
 		var consoleLines = this.state.lines.map(function(consoleLine) {
 			return (
-				<ConsoleLine newLine={ this.newLine } context={ this.getContext(consoleLine.directory) } onChangeDirectory={ this.onChangeDirectory } getObject={ this.getObject }></ConsoleLine>
+				<ConsoleLine newLine={ this.newLine } context={ this.getContext(consoleLine.directory) } onChangeDirectory={ this.onChangeDirectory } getObject={ this.getObject } clear={ this.clear }></ConsoleLine>
 			);
 		}, this);
 
