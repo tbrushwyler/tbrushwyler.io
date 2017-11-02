@@ -1,0 +1,62 @@
+{
+	"name": "",
+	"path": "",
+	"isDirectory": true,
+	"contents": [
+		{
+			"name": "experiments",
+			"path": "/experiments",
+			"isDirectory": true,
+			"contents": [
+				{
+					"name": "alert.app",
+					"path": "/experiments/alert.app",
+					"isDirectory": false,
+					"isExecutable": true,
+					"url": "experiments/alert.js"
+				},
+				{
+					"name": "toggle_lights.app",
+					"path": "/experiments/toggle_lights.app",
+					"isDirectory": false,
+					"isExecutable": true,
+					"url": "experiments/toggle_lights.js"
+				},
+				{
+					"name": "view_source.app",
+					"path": "/experiments/view_source.app",
+					"isDirectory": false,
+					"isExecutable": true,
+					"url": "experiments/view_source.js"
+				}
+			]
+		},
+		{
+			"name": "projects",
+			"path": "/projects",
+			"isDirectory": true,
+			"contents": [
+				{
+					"path": "/projects/tbrushwyler",
+					"name": "tbrushwyler",
+					"isDirectory": true,
+					"contents": []
+				}
+			]
+		},
+		{
+			"name": "about.md",
+			"path": "/about.md",
+			"isDirectory": false,
+			"isExecutable": false,
+			"contents": "Hello, my name is Taylor Brushwyler and I like to learn new things.\n\nThis site was built as a playground to help me learn ReactJS.\nPlease feel free to play around."
+		},
+		{
+			"name": "contact.app",
+			"path": "/contact.app",
+			"isDirectory": false,
+			"isExecutable": true,
+			"contents": "window.location.href = \"mailto:trb1992@gmail.com\""
+		}
+	]
+}
