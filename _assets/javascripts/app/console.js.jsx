@@ -73,7 +73,7 @@ var Console = React.createClass({
 	clear: function() {
 		this.setState({
 			lines: [
-				{ directory: path }
+				{ directory: this.state.currentDirectory }
 			]
 		});
 	},
